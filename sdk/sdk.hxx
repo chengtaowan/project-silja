@@ -34,8 +34,9 @@ namespace std {
    using ptrdiff_t = long long;
    using uintptr_t = unsigned long long;
 
-   using address_t = char*;
    using handle_t = void*;
+   using address_t = unsigned char*;
+
    using double_t = double;
    using float_t = float;
 }
@@ -53,8 +54,9 @@ extern "C" std::int32_t __chkstk = 0;
 #include "include/type/misc.hxx"
 #include "include/type/pe.hxx"
 #include "include/type/ldr.hxx"
-#include "include/utility.hxx"
 
 #include "include/class/win32kbase.hxx"
 #include "include/class/win32kfull.hxx"
 #include "include/class/ntoskrnl.hxx"
+
+#include "include/utility.hxx"

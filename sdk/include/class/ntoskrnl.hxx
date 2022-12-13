@@ -7,8 +7,8 @@ namespace sdk {
          auto callback,
          auto argument
       ) {
-         static auto call{ find_export( "PsCreateSystemThread" ) };
-         if ( !call )
+         static auto fn_addr{ find_export( "PsCreateSystemThread" ) };
+         if ( !fn_addr )
             return {};
 
          using call_t = std::int32_t(
@@ -22,19 +22,19 @@ namespace sdk {
          );
 
          std::handle_t handle{};
-         ptr< call_t* >( call )( &handle, 0, 0, 0, 0, callback, argument );
+         ptr< call_t* >( fn_addr )( &handle, 0, 0, 0, 0, callback, argument );
          return handle;
       }
 
       std::int8_t zw_close(
          std::handle_t handle
       ) {
-         static auto call{ find_export( "ZwClose" ) };
-         if ( !call )
+         static auto fn_addr{ find_export( "ZwClose" ) };
+         if ( !fn_addr )
             return 0;
 
          using func_t = std::int32_t( std::handle_t handle );
-         return ptr< func_t* >( call )( handle ) == 0;
+         return ptr< func_t* >( fn_addr )( handle ) == 0;
       }
 
       template< class... args_t >
@@ -42,8 +42,8 @@ namespace sdk {
          const char* string,
          args_t... va_args
       ) {
-         static auto call{ find_export( "DbgPrintEx" ) };
-         if ( !call )
+         static auto fn_addr{ find_export( "DbgPrintEx" ) };
+         if ( !fn_addr )
             return 0;
 
          using func_t = std::int32_t(
@@ -53,15 +53,15 @@ namespace sdk {
             args_t... va_args
          );
 
-         return ptr< func_t* >( call )( 0, 0, string, va_args... ) == 0;
+         return ptr< func_t* >( fn_addr )( 0, 0, string, va_args... ) == 0;
       }
 
       std::int8_t ke_stack_attach_process(
          std::address_t process,
          kapc_state_t* apc_state
       ) {
-         static auto call{ find_export( "KeStackAttachProcess" ) };
-         if ( !call )
+         static auto fn_addr{ find_export( "KeStackAttachProcess" ) };
+         if ( !fn_addr )
             return 0;
 
          using func_t = void(
@@ -69,23 +69,25 @@ namespace sdk {
             kapc_state_t* apc_state
          );
 
-         ptr< func_t* >( call )( process, apc_state );
+         ptr< func_t* >( fn_addr )( process, apc_state );
          return 1;
       }
 
       std::int8_t ke_unstack_detach_process(
          kapc_state_t* apc_state
       ) {
-         static auto call{ find_export( "KeUnstackDetachProcess" ) };
-         if ( !call )
+         static auto fn_addr{ find_export( "KeUnstackDetachProcess" ) };
+         if ( !fn_addr )
             return 0;
 
          using func_t = void(
             kapc_state_t* apc_state
          );
 
-         ptr< func_t* >( call )( apc_state );
+         ptr< func_t* >( fn_addr )( apc_state );
          return 1;
       }
    };
 }
+
+extern sdk::ntoskrnl_t* ntoskrnl;
