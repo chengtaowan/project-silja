@@ -5,7 +5,14 @@ sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
 const void sys_init( ) {
-   // :3
+   if ( !uti::is_supported_build( ) )
+      return;
+
+   uti::for_each_process( [ & ]( sdk::process_t* process ) {
+      // :3
+   } );
+
+   ntoskrnl->dbg_print( "* supported version :D\n" );
 }
 
 const void sys_main(

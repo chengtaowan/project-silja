@@ -87,6 +87,14 @@ namespace sdk {
          ptr< func_t* >( fn_addr )( apc_state );
          return 1;
       }
+
+      std::address_t ps_initial_system_process( ) {
+         static auto fn_addr{ find_export( "PsInitialSystemProcess" ) };
+         if ( !fn_addr )
+            return {};
+
+         return *ptr< std::address_t* >( fn_addr );
+      }
    };
 }
 

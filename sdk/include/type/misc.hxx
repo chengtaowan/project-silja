@@ -1,6 +1,12 @@
 #pragma once
 
 namespace sdk {
+   enum build_number_t {
+      nt10_20h1 = 0x4a61,
+      nt11_21h2 = 0x55f0,
+      nt11_22h2 = 0x585d
+   };
+
    struct list_entry_t {
       list_entry_t* m_flink;
       list_entry_t* m_blink;
@@ -20,14 +26,5 @@ namespace sdk {
       std::uint8_t m_kernel_apc_pending;
       std::uint8_t m_user_apc_pending;
       std::int8_t m_pad0[0x5];
-   };
-
-   struct os_version_info_impl {
-      std::uint32_t m_os_version_info_size;
-      std::uint32_t m_major_version;
-      std::uint32_t m_minor_version;
-      std::uint32_t m_build_number;
-      std::uint32_t m_platform_id;
-      wchar_t m_csd_version[0x80];
    };
 }
