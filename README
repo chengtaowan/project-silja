@@ -1,4 +1,11 @@
-unsigned driver base for public use
-todo: pspcidtable & avl tree walking
+unsigned driver base for NT10 Win10/11
+
+supported builds:
+    --> Win11 22h2 10.0.22621.*
+    --> Win11 21h2 10.0.22000.*
+    --> Win10 21h2 10.0.19041.*
+    --> Win10 21h1 10.0.19041.*
+    --> Win10 20h2 10.0.19041.*
+    --> Win10 20h1 10.0.19041.*
 
 t. 3llena <3llena@protonmail.com>

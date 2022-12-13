@@ -8,7 +8,7 @@ const void sys_init( ) {
    if ( !uti::is_supported_build( ) )
       return;
 
-   uti::for_each_process( [ & ]( sdk::process_t* process ) {
+   uti::for_each_process( [ & ]( std::address_t process ) {
       // :3
    } );
 
