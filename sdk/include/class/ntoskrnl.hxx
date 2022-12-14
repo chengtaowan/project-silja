@@ -80,10 +80,7 @@ namespace sdk {
          if ( !fn_addr )
             return 0;
 
-         using func_t = void(
-            kapc_state_t* apc_state
-         );
-
+         using func_t = void( kapc_state_t* apc_state );
          ptr< func_t* >( fn_addr )( apc_state );
          return 1;
       }
@@ -94,6 +91,65 @@ namespace sdk {
             return {};
 
          return *ptr< std::address_t* >( fn_addr );
+      }
+
+      std::int32_t ps_get_process_exit_status(
+         std::address_t process
+      ) {
+         static auto fn_addr{ find_export( "PsGetProcessExitStatus" ) };
+         if ( !fn_addr )
+            return 0;
+
+         using func_t = std::int32_t( std::address_t process );
+         return ptr< func_t* >( fn_addr )( process );
+      }
+
+      std::int8_t ke_delay_execution_thread(
+         std::size_t* wait_interval
+      ) {
+         static auto fn_addr{ find_export( "KeDelayExecutionThread" ) };
+         if ( !fn_addr )
+            return 0;
+
+         using func_t = std::int32_t(
+            std::int8_t processor_mode,
+            std::int8_t alertable_wait,
+            std::size_t* wait_interval
+         );
+
+         return ptr< func_t* >( fn_addr )( 0, 0, wait_interval ) == 0;
+      }
+
+      [[ nodiscard ]]
+      std::address_t ps_get_current_thread( ) {
+         static auto fn_addr{ find_export( "PsGetCurrentThread" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = std::address_t( );
+         return ptr< func_t* >( fn_addr )( );
+      }
+
+      [[ nodiscard ]]
+      std::address_t ps_get_thread_id(
+         std::address_t thread
+      ) {
+         static auto fn_addr{ find_export( "PsGetThreadId" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = std::address_t( std::address_t thread );
+         return ptr< func_t* >( fn_addr )( thread );
+      }
+
+      std::int8_t ex_destroy_handle(
+         std::address_t handle_table       [[ maybe_unused ]],
+         std::address_t handle             [[ maybe_unused ]],
+         std::address_t handle_table_entry [[ maybe_unused ]]
+      ) {
+         // ExSweepSingleHandle( handle_table, handle_table_entry );
+         // ExpFreeHandleTableEntry( handle_table, handle, handle_table_entry );
+         return 1;
       }
    };
 }

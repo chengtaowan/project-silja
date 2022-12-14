@@ -7,6 +7,10 @@ namespace sdk {
       nt11_22h2 = 0x585d
    };
 
+   enum process_status_t {
+      still_active = 0x103
+   };
+
    struct list_entry_t {
       list_entry_t* m_flink;
       list_entry_t* m_blink;
