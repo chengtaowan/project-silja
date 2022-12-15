@@ -175,6 +175,29 @@ namespace sdk {
          return {};
       }
 
+      //[[ nodiscard ]]
+      //std::address_t field_offset(
+      //   const char* struct_name,
+      //   const char* field_name
+      //) {
+      //   // parse RSDS via m_image_ptr
+      //   // allocate buffer
+      //   // open file
+      //   // read file
+      //   // walk entries
+      //   // compare symbol_name
+      //   // free buffer
+      //   // return rva
+      //   return {};
+      //}
+
+      //[[ nodiscard ]]
+      //std::address_t find_symbol(
+      //   const char* symbol_name
+      //) {
+      //   // return field_offset( 0, field_name );
+      //}
+
       std::address_t m_image_ptr;
    };
 }

@@ -104,22 +104,6 @@ namespace sdk {
          return ptr< func_t* >( fn_addr )( process );
       }
 
-      std::int8_t ke_delay_execution_thread(
-         std::size_t* wait_interval
-      ) {
-         static auto fn_addr{ find_export( "KeDelayExecutionThread" ) };
-         if ( !fn_addr )
-            return 0;
-
-         using func_t = std::int32_t(
-            std::int8_t processor_mode,
-            std::int8_t alertable_wait,
-            std::size_t* wait_interval
-         );
-
-         return ptr< func_t* >( fn_addr )( 0, 0, wait_interval ) == 0;
-      }
-
       [[ nodiscard ]]
       std::address_t ps_get_current_thread( ) {
          static auto fn_addr{ find_export( "PsGetCurrentThread" ) };
