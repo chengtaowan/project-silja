@@ -1,5 +1,4 @@
 unsigned driver base for NT10 Win10/11
-
 supported builds:
     --> Win11 22h2 10.0.22621.*
     --> Win11 21h2 10.0.22000.*
