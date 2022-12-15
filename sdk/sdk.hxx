@@ -53,6 +53,7 @@ extern "C" std::int32_t __chkstk = 0;
 
 #include "include/type/misc.hxx"
 #include "include/type/pe.hxx"
+#include "include/type/sym.hxx"
 
 #include "include/class/win32kbase.hxx"
 #include "include/class/win32kfull.hxx"

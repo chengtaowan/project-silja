@@ -19,7 +19,6 @@ namespace sdk {
    struct unicode_string_t {
       std::uint16_t m_length;
       std::uint16_t m_maximum_length;
-      std::int8_t m_pad0[0x4];
       wchar_t* m_buffer;
    };
 
@@ -29,6 +28,5 @@ namespace sdk {
       std::uint8_t m_in_progress_flags;
       std::uint8_t m_kernel_apc_pending;
       std::uint8_t m_user_apc_pending;
-      std::int8_t m_pad0[0x5];
    };
 }
