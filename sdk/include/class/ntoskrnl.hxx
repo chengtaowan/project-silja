@@ -141,16 +141,6 @@ namespace sdk {
          using func_t = std::address_t( std::address_t thread );
          return ptr< func_t* >( fn_addr )( thread );
       }
-
-      std::int8_t ex_destroy_handle(
-         std::address_t handle_table       [[ maybe_unused ]],
-         std::address_t handle             [[ maybe_unused ]],
-         std::address_t handle_table_entry [[ maybe_unused ]]
-      ) {
-         // ExSweepSingleHandle( handle_table, handle_table_entry );
-         // ExpFreeHandleTableEntry( handle_table, handle, handle_table_entry );
-         return 1;
-      }
    };
 }
 

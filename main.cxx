@@ -6,7 +6,7 @@ sdk::ntoskrnl_t* ntoskrnl{};
 
 const void sys_init( ) {
    if ( !uti::is_supported_build( ) ) {
-      uti::log( "unsupported build... exiting" );
+      ntoskrnl->dbg_print( "[silja] unsupported build... exiting" );
       return;
    }
 
@@ -28,9 +28,9 @@ const void sys_main(
    w32kfull = ptr< sdk::w32kfull_t* >( &copy[ 1 ] );
    ntoskrnl = ptr< sdk::ntoskrnl_t* >( &copy[ 2 ] );
 
-   uti::log( "w32kbase 0x%llx\n", w32kbase );
-   uti::log( "w32kfull 0x%llx\n", w32kfull );
-   uti::log( "ntoskrnl 0x%llx\n", ntoskrnl );
+   ntoskrnl->dbg_print( "[silja] w32kbase 0x%llx\n", w32kbase );
+   ntoskrnl->dbg_print( "[silja] w32kfull 0x%llx\n", w32kfull );
+   ntoskrnl->dbg_print( "[silja] ntoskrnl 0x%llx\n", ntoskrnl );
 
    auto thread{ ntoskrnl->ps_create_system_thread( &sys_init, 0 ) };
    if ( thread )

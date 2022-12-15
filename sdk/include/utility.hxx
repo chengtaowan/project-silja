@@ -23,20 +23,4 @@ namespace uti {
           || nt_build == sdk::build_number_t::nt11_21h2
           || nt_build == sdk::build_number_t::nt11_22h2;
    }
-
-   std::int8_t wait_for_ms(
-      std::size_t wait_time
-   ) {
-      wait_time *= -10000;
-      return ntoskrnl->ke_delay_execution_thread( &wait_time );
-   }
-   
-   template< class... args_t >
-   std::int8_t log(
-      const char* string,
-      args_t... va_args
-   ) {
-      return ntoskrnl->dbg_print( "[silja] " )
-          && ntoskrnl->dbg_print( string, va_args... );
-   }
 }
