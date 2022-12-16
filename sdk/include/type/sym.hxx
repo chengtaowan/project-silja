@@ -20,7 +20,7 @@ namespace sdk {
    struct sym_record_t {
       std::int16_t m_magic;
       std::int32_t m_rva;
-      std::int64_t m_next;
+      std::int32_t m_next;
 
       [[ nodiscard ]]
       constexpr bool is_valid( ) {
