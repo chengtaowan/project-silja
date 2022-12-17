@@ -4,18 +4,20 @@ sdk::w32kbase_t* w32kbase{};
 sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
-const void sys_init( ) {
+void sys_init( ) {
    if ( !uti::is_supported_build( ) ) {
       ntoskrnl->dbg_print( "[silja] unsupported build... exiting" );
       return;
    }
+
+   ntoskrnl->dbg_print( "[silja] hello world!" );
 
    // uti::unlink_handle
    // uti::unlink_thread
    // uti::borrow_thread
 }
 
-const void sys_main(
+void sys_main(
    const std::address_t* data
 ) {
    static std::address_t copy[ ] = {

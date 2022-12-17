@@ -2,7 +2,7 @@
 
 namespace std {
    [[ nodiscard ]]
-   const size_t strlen(
+   size_t strlen(
       const char* string
    ) {
       size_t count{};
@@ -11,7 +11,7 @@ namespace std {
    }
 
    [[ nodiscard ]]
-   const size_t wcslen(
+   size_t wcslen(
       const wchar_t* wstring
    ) {
       size_t count{};

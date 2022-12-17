@@ -175,41 +175,6 @@ namespace sdk {
          return {};
       }
 
-      [[ nodiscard ]]
-      std::address_t field_offset(
-         const char* parent_name,
-         const char* symbol_name
-      ) {
-         std::address_t file_buffer{}; // from zwreadfile
-         // if ( !file_buffer )
-         //    return {};
-
-         auto header{ ptr< sym_header_t* >( file_buffer ) };
-         auto record{ ptr< sym_record_t* >( file_buffer + header->m_next ) };
-         if ( !header->is_valid( )
-           || !record->is_valid( ) )
-            return {};
-
-         do {
-            auto symbol{ &ptr< char* >( &record->m_next )[ 0x4 ] };
-            auto parent{ &ptr< char* >( &record->m_next )[ 0x5 ] + std::strlen( symbol ) };
-
-            if ( std::strcmp( parent_name, parent ) == 0 
-              && std::strcmp( symbol_name, symbol ) == 0 )
-               return m_image_ptr + record->m_rva;
-
-            record = ptr< sym_record_t* >( ptr< char* >( record ) + record->m_next );
-         } while ( record->m_magic );
-         return {};
-      }
-
-      //[[ nodiscard ]]
-      //std::address_t find_symbol(
-      //   const char* symbol_name
-      //) {
-      //   // return field_offset( 0, field_name );
-      //}
-
       std::address_t m_image_ptr;
    };
 }

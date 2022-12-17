@@ -2,7 +2,7 @@
 
 namespace std {
    [[ nodiscard ]]
-   const int32_t strcmp(
+   int32_t strcmp(
       const char* string,
       const char* string_cmp
    ) {
@@ -16,7 +16,7 @@ namespace std {
    }
 
    [[ nodiscard ]]
-   const int32_t wcscmp(
+   int32_t wcscmp(
       const wchar_t* wstring,
       const wchar_t* wstring_cmp
    ) {

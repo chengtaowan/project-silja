@@ -44,15 +44,11 @@ namespace std {
 template< class type_t >
 type_t ptr( auto obj ) { return ( type_t )obj; }
 
-extern "C" std::int32_t _fltused = 0;
-extern "C" std::int32_t __chkstk = 0;
-
 #include "include/rtl/strcmp.hxx"
 #include "include/rtl/strlen.hxx"
 #include "include/rtl/strstr.hxx"
 
 #include "include/type/misc.hxx"
-#include "include/type/sym.hxx"
 #include "include/type/pe.hxx"
 
 #include "include/class/win32kbase.hxx"
