@@ -1,10 +1,11 @@
 #pragma once
 
 namespace sdk {
-   enum build_number_t {
-      nt10_20h1 = 0x4a61,
-      nt11_21h2 = 0x55f0,
-      nt11_22h2 = 0x585d
+   enum nt_build_t {
+      win11_22h2 = 0x585d,
+      win11_21h1 = 0x55f0,
+      win10_20h1 = 0x4a61,
+      win10_19h1 = 0x47ba
    };
 
    struct list_entry_t {
