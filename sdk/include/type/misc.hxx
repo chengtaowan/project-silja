@@ -4,8 +4,7 @@ namespace sdk {
    enum nt_build_t {
       win11_22h2 = 0x585d,
       win11_21h1 = 0x55f0,
-      win10_20h1 = 0x4a61,
-      win10_19h1 = 0x47ba
+      win10_20h1 = 0x4a61
    };
 
    struct list_entry_t {

@@ -4,17 +4,8 @@ sdk::w32kbase_t* w32kbase{};
 sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
-void sys_init( ) {
-   if ( !uti::is_supported_build( ) ) {
-      ntoskrnl->dbg_print( "[silja] unsupported build... exiting" );
-      return;
-   }
-
-   ntoskrnl->dbg_print( "[silja] hello world!" );
-
-   // uti::unlink_handle
-   // uti::unlink_thread
-   // uti::borrow_thread
+void sys_draw( ) {
+   ntoskrnl->dbg_print( "[silja] hello warudo!" );
 }
 
 void sys_main(
@@ -34,7 +25,12 @@ void sys_main(
    ntoskrnl->dbg_print( "[silja] w32kfull 0x%llx\n", w32kfull );
    ntoskrnl->dbg_print( "[silja] ntoskrnl 0x%llx\n", ntoskrnl );
 
-   auto thread{ ntoskrnl->ps_create_system_thread( &sys_init, 0 ) };
-   if ( thread )
-      ntoskrnl->zw_close( thread );
+   if ( ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win11_22h2
+     && ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win11_21h1
+     && ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win10_20h1 )
+      return;
+
+   auto draw{ ntoskrnl->ps_create_system_thread( &sys_draw ) };
+   if ( draw )
+      ntoskrnl->zw_close( draw );
 }

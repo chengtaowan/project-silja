@@ -22,7 +22,7 @@ namespace sdk {
       std::int16_t m_cs;
       std::int16_t m_lfarlc;
       std::int16_t m_ovno;
-      std::int16_t m_res[0x4];  
+      std::int16_t m_res0[0x4];  
       std::int16_t m_oemid;
       std::int16_t m_oeminfo;
       std::int16_t m_res1[0xa];
