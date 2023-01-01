@@ -33,8 +33,6 @@ namespace sdk {
          return *ptr< std::uint32_t* >( fn_addr ) & 0xffff;
       }
 
-
-
       std::int8_t zw_close(
          std::handle_t handle
       ) {
