@@ -25,7 +25,7 @@ void sys_draw( ) {
 void sys_read( ) { /* ;3 */ }
 
 void sys_main(
-   const std::addr_t* imports
+   std::addr_t* imports
 ) {
    static std::addr_t copy[ ] = {
       imports[ 0x0 ], // win32kbase.sys
