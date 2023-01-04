@@ -28,15 +28,13 @@ namespace std {
    using uint_fast32_t = unsigned int;
    using uint_fast64_t = unsigned long long;
 
+   using uintptr_t = unsigned long long;
    using size_t = unsigned long long;
    using intmax_t = long long;
    using uintmax_t = long long;
    using ptrdiff_t = long long;
-   using uintptr_t = unsigned long long;
 
-   using handle_t = void*;
-   using address_t = unsigned char*;
-
+   using addr_t = unsigned char*;
    using double_t = double;
    using float_t = float;
 }
@@ -49,7 +47,6 @@ type_t ptr( auto obj ) { return ( type_t )obj; }
 #include "include/rtl/strstr.hxx"
 
 #include "include/type/misc.hxx"
-#include "include/type/info.hxx"
 #include "include/type/pe.hxx"
 
 #include "include/class/win32kbase.hxx"

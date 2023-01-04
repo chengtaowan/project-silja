@@ -41,7 +41,7 @@ namespace sdk {
       template< class type_t >
       [[ nodiscard ]]
       type_t as_rva(
-         std::address_t rva
+         std::addr_t rva
       ) {
          return ptr< type_t >( rva + m_virtual_address );
       }
@@ -143,7 +143,7 @@ namespace sdk {
 
    struct kernel_module_t {
       [[ nodiscard ]]
-      std::address_t find_export(
+      std::addr_t find_export(
          const char* export_name
       ) {
          auto dos_header{ ptr< dos_header_t* >( m_image_ptr ) };
@@ -170,11 +170,11 @@ namespace sdk {
                continue;
 
             if ( std::strcmp( export_name, ptr< char* >( cur_name ) ) == 0 )
-               return ptr< std::address_t >( cur_func );
+               return ptr< std::addr_t >( cur_func );
          }
          return {};
       }
 
-      std::address_t m_image_ptr;
+      std::addr_t m_image_ptr;
    };
 }

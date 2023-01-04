@@ -7,6 +7,15 @@ namespace sdk {
       win10_20h1 = 0x4a61
    };
 
+   enum nt_status_t {
+      success,
+      alerted = 0x101,
+      timeout = 0x102,
+      pending = 0x103,
+      unsuccess = 0xc0000001,
+      violation = 0xc0000005
+   };
+
    struct list_entry_t {
       list_entry_t* m_flink;
       list_entry_t* m_blink;
@@ -20,7 +29,7 @@ namespace sdk {
 
    struct kapc_state_t {
       list_entry_t m_apc_list_head[0x2];
-      std::address_t m_process;
+      std::addr_t m_process;
       std::uint8_t m_in_progress_flags;
       std::uint8_t m_kernel_apc_pending;
       std::uint8_t m_user_apc_pending;

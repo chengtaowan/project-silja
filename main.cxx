@@ -5,21 +5,37 @@ sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
 void sys_draw( ) {
-   ntoskrnl->dbg_print( "[silja] hello warudo!" );
+   //auto dwm{ uti::find_process_by_name( L"dwm.exe" ) };
+   //if ( !dwm )
+   //   return;
+   //
+   //sdk::kapc_state_t apc{};
+   //ntoskrnl->ke_stack_attach_process( dwm, &apc );
+
+   // attach thread
+   // steal win32 thread, process, cid process and cid thread
+   // unlink shit
+
+   ntoskrnl->dbg_print( "[silja] hello warudo!\n" );
+   //ntoskrnl->dbg_print( "[silja] dwm.exe 0x%llx\n", dwm );
+
+   //ntoskrnl->ke_unstack_detach_process( &apc );
 }
 
+void sys_read( ) { /* ;3 */ }
+
 void sys_main(
-   const std::address_t* data
+   const std::addr_t* imports
 ) {
-   static std::address_t copy[ ] = {
-      data[ 0 ], // win32kbase.sys
-      data[ 1 ], // win32kfull.sys
-      data[ 2 ]  // ntoskrnl.exe
+   static std::addr_t copy[ ] = {
+      imports[ 0x0 ], // win32kbase.sys
+      imports[ 0x1 ], // win32kfull.sys
+      imports[ 0x2 ]  // ntoskrnl.exe
    };
 
-   w32kbase = ptr< sdk::w32kbase_t* >( &copy[ 0 ] );
-   w32kfull = ptr< sdk::w32kfull_t* >( &copy[ 1 ] );
-   ntoskrnl = ptr< sdk::ntoskrnl_t* >( &copy[ 2 ] );
+   w32kbase = ptr< sdk::w32kbase_t* >( &copy[ 0x0 ] );
+   w32kfull = ptr< sdk::w32kfull_t* >( &copy[ 0x1 ] );
+   ntoskrnl = ptr< sdk::ntoskrnl_t* >( &copy[ 0x2 ] );
 
    ntoskrnl->dbg_print( "[silja] w32kbase 0x%llx\n", w32kbase );
    ntoskrnl->dbg_print( "[silja] w32kfull 0x%llx\n", w32kfull );
@@ -30,7 +46,12 @@ void sys_main(
      && ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win10_20h1 )
       return;
 
-   auto draw{ ntoskrnl->ps_create_system_thread( &sys_draw ) };
-   if ( draw )
-      ntoskrnl->zw_close( draw );
+   std::addr_t draw{};
+   std::addr_t read{};
+
+   ntoskrnl->ps_create_system_thread( &draw, &sys_draw, 0 );
+   ntoskrnl->ps_create_system_thread( &read, &sys_read, 0 );
+   
+   if ( draw ) ntoskrnl->zw_close( draw );
+   if ( read ) ntoskrnl->zw_close( read );
 }
