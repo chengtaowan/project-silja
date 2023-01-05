@@ -163,8 +163,8 @@ namespace sdk {
          auto ords{ ptr< std::int16_t* >( m_image_ptr + exp_dir->m_address_of_names_ordinals ) };
 
          for ( std::int32_t i{}; i < exp_dir->m_number_of_names; i++ ) {
-            auto cur_name{ m_image_ptr + name[ i ] };
-            auto cur_func{ m_image_ptr + func[ ords[ i ] ] };
+            auto cur_name{ m_image_ptr + name[i] };
+            auto cur_func{ m_image_ptr + func[ords[i]] };
             if ( !cur_name 
               || !cur_func )
                continue;

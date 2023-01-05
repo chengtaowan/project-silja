@@ -1,19 +1,17 @@
 #pragma once
 
 namespace sdk {
-   enum nt_build_t {
-      win11_22h2 = 0x585d,
-      win11_21h1 = 0x55f0,
-      win10_20h1 = 0x4a61
-   };
-
    enum nt_status_t {
       success,
       alerted = 0x101,
       timeout = 0x102,
-      pending = 0x103,
-      unsuccess = 0xc0000001,
-      violation = 0xc0000005
+      pending = 0x103
+   };
+   
+   enum nt_build_t {
+      win11_22h2 = 0x585d,
+      win11_21h1 = 0x55f0,
+      win10_20h1 = 0x4a61
    };
 
    struct list_entry_t {
