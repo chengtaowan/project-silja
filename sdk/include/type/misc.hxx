@@ -19,12 +19,6 @@ namespace sdk {
       list_entry_t* m_blink;
    };
 
-   struct unicode_string_t {
-      std::uint16_t m_length;
-      std::uint16_t m_maximum_length;
-      wchar_t* m_buffer;
-   };
-
    struct kapc_state_t {
       list_entry_t m_apc_list_head[0x2];
       std::addr_t m_process;
@@ -32,4 +26,12 @@ namespace sdk {
       std::uint8_t m_kernel_apc_pending;
       std::uint8_t m_user_apc_pending;
    };
+
+   struct unicode_string_t {
+      std::uint16_t m_length;
+      std::uint16_t m_maximum_length;
+      wchar_t* m_buffer;
+   };
+
+   enum mm_copy_flag_t { phys, virt };
 }

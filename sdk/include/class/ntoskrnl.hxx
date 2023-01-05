@@ -18,8 +18,31 @@ namespace sdk {
             args_t... va_args
          );
 
-         return ptr< func_t* >( fn_addr )( 0, 0,
-            format, va_args... ) == nt_status_t::success;
+         return ptr< func_t* >( fn_addr )
+            ( 0, 0,format, va_args... ) == nt_status_t::success;
+      }
+
+      template< std::int8_t flag >
+      std::int8_t mm_copy_memory(
+         auto dst_address,
+         auto src_address,
+         auto size
+      ) {
+         static auto fn_addr{ find_export( "MmCopyMemory" ) };
+         if ( !fn_addr )
+            return 0;
+
+         using func_t = std::int32_t(
+            decltype( dst_address ),
+            decltype( src_address ),
+            std::size_t size,
+            std::int32_t flag,
+            std::size_t* bytes_read
+         );
+
+         std::size_t bytes_read{};
+         return ptr< func_t* >( fn_addr )( dst_address, 
+            src_address, size, flag, &bytes_read ) == nt_status_t::success;
       }
 
       std::int8_t ps_create_system_thread(
@@ -41,16 +64,23 @@ namespace sdk {
             decltype( start_context )
          );
 
-         return ptr< func_t* >( fn_addr )( handle, 0, 0, 0, 0,
+         return ptr< func_t* >( fn_addr )( handle, 0, 0, 0, 0, 
             start_routine, start_context ) == nt_status_t::success;
       }
 
+      [[ nodiscard ]]
       std::int32_t nt_build_number( ) {
-         static auto fn_addr{ find_export( "NtBuildNumber" ) };
+         static auto fn_addr{ find_export( "KeCapturePersistentThreadState" ) };
          if ( !fn_addr )
             return 0;
 
-         return *ptr< std::int32_t* >( fn_addr ) & 0xffff;
+         while ( fn_addr[0x0] != 0x0f
+              || fn_addr[0x1] != 0xb7
+              || fn_addr[0x2] != 0x05 )
+            fn_addr++;
+
+         return *ptr< std::int32_t* >
+            ( &fn_addr[0x7] + *ptr< std::int32_t* >( &fn_addr[0x3] ) ) & 0xffff;
       }
 
       std::int8_t zw_close(
@@ -94,6 +124,7 @@ namespace sdk {
          return 1;
       }
 
+      [[ nodiscard ]]
       std::addr_t ps_initial_system_process( ) {
          static auto fn_addr{ find_export( "PsInitialSystemProcess" ) };
          if ( !fn_addr )
@@ -102,6 +133,22 @@ namespace sdk {
          return *ptr< std::addr_t* >( fn_addr );
       }
 
+      [[ nodiscard ]]
+      list_entry_t* ps_active_process_head( ) {
+         static auto fn_addr{ find_export( "KeCapturePersistentThreadState" ) };
+         if ( !fn_addr )
+            return {};
+
+         while ( fn_addr[0x0] != 0x20
+              || fn_addr[0x1] != 0x48
+              || fn_addr[0x2] != 0x8d )
+            fn_addr++;
+
+         return *ptr< list_entry_t** >
+            ( &fn_addr[0x8] + *ptr< std::int32_t* >( &fn_addr[0x4] ) );
+      }
+
+      [[ nodiscard ]]
       std::int8_t is_valid_process(
          auto process
       ) {
@@ -130,6 +177,7 @@ namespace sdk {
             ( process_id, process ) == nt_status_t::success;
       }
 
+      [[ nodiscard ]]
       unicode_string_t* ps_query_full_process_image_name(
          std::addr_t process
       ) {
@@ -151,7 +199,8 @@ namespace sdk {
               || ps_rva[0x6] != 0x48 )
             ps_rva++;
 
-         return *ptr< unicode_string_t** >( process + *ptr< std::int32_t* >( &ps_rva[0x9] ) );
+         return *ptr< unicode_string_t** >
+            ( process + *ptr< std::int32_t* >( &ps_rva[0x9] ) );
       }
 
       //[[ nodiscard ]]

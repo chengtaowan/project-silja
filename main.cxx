@@ -32,12 +32,12 @@ void sys_main(
      && ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win10_20h1 )
       return;
 
-   std::addr_t draw{};
-   std::addr_t read{};
+   std::addr_t draw_thread{};
+   std::addr_t read_thread{};
 
-   ntoskrnl->ps_create_system_thread( &draw, &sys_draw, 0 );
-   ntoskrnl->ps_create_system_thread( &read, &sys_read, 0 );
+   ntoskrnl->ps_create_system_thread( &draw_thread, &sys_draw, 0 );
+   ntoskrnl->ps_create_system_thread( &read_thread, &sys_read, 0 );
    
-   if ( draw ) ntoskrnl->zw_close( draw );
-   if ( read ) ntoskrnl->zw_close( read );
+   if ( draw_thread ) ntoskrnl->zw_close( draw_thread );
+   if ( read_thread ) ntoskrnl->zw_close( read_thread );
 }
