@@ -18,14 +18,14 @@ namespace sdk {
             args_t... va_args
          );
 
-         return ptr< func_t* >( fn_addr )
-            ( 0, 0,format, va_args... ) == nt_status_t::success;
+         return ptr< func_t* >( fn_addr )( 0, 0,
+            format, va_args... ) == nt_status_t::success;
       }
 
-      template< std::int8_t flag >
-      std::int8_t mm_copy_memory(
-         auto dst_address,
-         auto src_address,
+      template< std::int32_t flag >
+      std::int32_t mm_copy_memory(
+         auto dst_addr,
+         auto src_addr,
          auto size
       ) {
          static auto fn_addr{ find_export( "MmCopyMemory" ) };
@@ -33,16 +33,51 @@ namespace sdk {
             return 0;
 
          using func_t = std::int32_t(
-            decltype( dst_address ),
-            decltype( src_address ),
+            decltype( dst_addr ),
+            decltype( src_addr ),
             std::size_t size,
             std::int32_t flag,
             std::size_t* bytes_read
          );
 
          std::size_t bytes_read{};
-         return ptr< func_t* >( fn_addr )( dst_address, 
-            src_address, size, flag, &bytes_read ) == nt_status_t::success;
+         return ptr< func_t* >( fn_addr )( dst_addr, 
+            src_addr, size, flag, &bytes_read ) == nt_status_t::success;
+      }
+
+      template< std::int32_t flag >
+      [[ nodiscard ]]
+      std::addr_t mm_map_io_space_ex(
+         auto address,
+         auto size
+      ) {
+         static auto fn_addr{ find_export( "MmMapIoSpaceEx" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = std::addr_t(
+            decltype( address ),
+            std::size_t size,
+            std::int32_t flag
+         );
+
+         return ptr< func_t* >( fn_addr )( address, size, flag );
+      }
+
+      void mm_unmap_io_space(
+         auto address,
+         auto size
+      ) {
+         static auto fn_addr{ find_export( "MmUnmapIoSpace" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = void(
+            decltype( address ),
+            std::size_t size
+         );
+
+         ptr< func_t* >( fn_addr )( address, size );
       }
 
       std::int8_t ps_create_system_thread(
@@ -94,7 +129,7 @@ namespace sdk {
          return ptr< func_t* >( fn_addr )( handle ) == nt_status_t::success;
       }
 
-      std::int8_t ke_stack_attach_process(
+      void ke_stack_attach_process(
          auto process,
          auto apc_state
       ) {
@@ -108,10 +143,9 @@ namespace sdk {
          );
 
          ptr< func_t* >( fn_addr )( process, apc_state );
-         return 1;
       }
 
-      std::int8_t ke_unstack_detach_process(
+      void ke_unstack_detach_process(
          auto apc_state
       ) {
          static auto fn_addr{ find_export( "KeUnstackDetachProcess" ) };
@@ -120,8 +154,6 @@ namespace sdk {
 
          using func_t = void( kapc_state_t* apc_state );
          ptr< func_t* >( fn_addr )( apc_state );
-
-         return 1;
       }
 
       [[ nodiscard ]]

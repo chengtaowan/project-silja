@@ -5,7 +5,16 @@ sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
 void sys_draw( ) {
-   ntoskrnl->dbg_print( "[silja] hello warudo!\n" );
+   auto dwm{ uti::process_by_name( L"dwm.exe" ) };
+   if ( !dwm )
+      return;
+
+   sdk::kapc_state_t apc{};
+   ntoskrnl->ke_stack_attach_process( dwm, &apc );
+
+   ntoskrnl->dbg_print( "[silja] dwm.exe 0x%llx\n", dwm );
+
+   ntoskrnl->ke_unstack_detach_process( &apc );
 }
 
 void sys_read( ) { /* ;3 */ }
