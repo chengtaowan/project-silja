@@ -32,8 +32,7 @@ namespace uti {
             ntoskrnl->mm_copy_memory< flag >( dst_addr + i, src_addr + i, 1 );
 
          if constexpr ( flag == sdk::mm_copy_flag_t::phys ) {
-            auto io_space{ ntoskrnl->mm_map_io_space_ex
-               < sdk::mm_prot_flag_t::page_rw >( dst_addr + i, 1 ) };
+            auto io_space{ ntoskrnl->mm_map_io_space_ex< sdk::mm_prot_flag_t::page_rw >( dst_addr + i, 1 ) };
             if ( !io_space )
                return;
 
@@ -58,7 +57,7 @@ namespace uti {
       for ( auto it{ init_pe->m_flink }; it != init_pe; it = it->m_flink ) {
 
          auto it_process{ ptr< std::addr_t >( it ) - link_va };
-         if ( !it_process || !ntoskrnl->is_valid_process( it_process ) )
+         if ( !it_process || !ntoskrnl->ps_is_process_status_pending( it_process ) )
             continue;
 
          auto uni_name{ ntoskrnl->ps_query_full_process_image_name( it_process ) };

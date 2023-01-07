@@ -13,7 +13,6 @@ void sys_draw( ) {
    ntoskrnl->ke_stack_attach_process( dwm, &apc );
 
    ntoskrnl->dbg_print( "[silja] dwm.exe 0x%llx\n", dwm );
-
    ntoskrnl->ke_unstack_detach_process( &apc );
 }
 

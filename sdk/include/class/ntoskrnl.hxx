@@ -129,13 +129,28 @@ namespace sdk {
          return ptr< func_t* >( fn_addr )( handle ) == nt_status_t::success;
       }
 
+      std::addr_t ps_query_process_directory_table_base(
+         auto process
+      ) {
+         static auto fn_addr{ find_export( "KeCapturePersistentThreadState" ) };
+         if ( !fn_addr )
+            return {};
+
+         while ( fn_addr[ 0x0 ] != 0x48
+              || fn_addr[ 0x1 ] != 0x8b 
+              || fn_addr[ 0x2 ] != 0x48 )
+            fn_addr++;
+
+         return *ptr< std::addr_t* >( process + *ptr< std::int8_t* >( &fn_addr[ 0x3 ] ) );
+      }
+
       void ke_stack_attach_process(
          auto process,
          auto apc_state
       ) {
          static auto fn_addr{ find_export( "KeStackAttachProcess" ) };
          if ( !fn_addr )
-            return 0;
+            return;
 
          using func_t = void(
             std::addr_t process,
@@ -150,7 +165,7 @@ namespace sdk {
       ) {
          static auto fn_addr{ find_export( "KeUnstackDetachProcess" ) };
          if ( !fn_addr )
-            return 0;
+            return;
 
          using func_t = void( kapc_state_t* apc_state );
          ptr< func_t* >( fn_addr )( apc_state );
@@ -181,7 +196,7 @@ namespace sdk {
       }
 
       [[ nodiscard ]]
-      std::int8_t is_valid_process(
+      std::int8_t ps_is_process_status_pending(
          auto process
       ) {
          static auto fn_addr{ find_export( "PsGetProcessExitStatus" ) };
