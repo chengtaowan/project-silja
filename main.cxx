@@ -4,19 +4,21 @@ sdk::w32kbase_t* w32kbase{};
 sdk::w32kfull_t* w32kfull{};
 sdk::ntoskrnl_t* ntoskrnl{};
 
-void sys_draw( ) {
-   auto dwm{ uti::process_by_name( L"dwm.exe" ) };
-   if ( !dwm )
-      return;
+constexpr wchar_t* game_name{ L"ProcessHacker.exe" };
+constexpr wchar_t* base_name{ L"ProcessHacker.exe" };
 
-   sdk::kapc_state_t apc{};
-   ntoskrnl->ke_stack_attach_process( dwm, &apc );
+void sys_init( ) {
+   //std::addr_t game{};
+   //std::addr_t base{};
 
-   ntoskrnl->dbg_print( "[silja] dwm.exe 0x%llx\n", dwm );
-   ntoskrnl->ke_unstack_detach_process( &apc );
+   //while ( !game ) game = uti::get_process_by_name( game_name );
+   //while ( !base ) base = uti::get_module_by_name( game, base_name );
+
+   //ntoskrnl->dbg_print( "[silja] game 0x%llx\n", game );
+   //ntoskrnl->dbg_print( "[silja] base 0x%llx\n", base );
+
+   //ntoskrnl->dbg_print( "[silja] read %lx\n", uti::read< short >( game, base ) );
 }
-
-void sys_read( ) { /* ;3 */ }
 
 void sys_main(
    std::addr_t* imports
@@ -40,12 +42,8 @@ void sys_main(
      && ntoskrnl->nt_build_number( ) != sdk::nt_build_t::win10_20h1 )
       return;
 
-   std::addr_t draw_thread{};
-   std::addr_t read_thread{};
-
-   ntoskrnl->ps_create_system_thread( &draw_thread, &sys_draw, 0 );
-   ntoskrnl->ps_create_system_thread( &read_thread, &sys_read, 0 );
-   
-   if ( draw_thread ) ntoskrnl->zw_close( draw_thread );
-   if ( read_thread ) ntoskrnl->zw_close( read_thread );
+   std::addr_t init_thread{};
+   ntoskrnl->ps_create_system_thread( &init_thread, &sys_init, 0 );
+   if ( init_thread )
+      ntoskrnl->zw_close( init_thread );
 }

@@ -1,4 +1,4 @@
-#pragma once
+#include <intrin.h>
 
 namespace std {
    using int8_t = signed char;

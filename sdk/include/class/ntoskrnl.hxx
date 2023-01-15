@@ -22,62 +22,48 @@ namespace sdk {
             format, va_args... ) == nt_status_t::success;
       }
 
-      template< std::int32_t flag >
-      std::int32_t mm_copy_memory(
-         auto dst_addr,
-         auto src_addr,
-         auto size
+      std::addr_t ps_get_current_process( ) {
+         static auto fn_addr{ find_export( "PsGetCurrentProcess" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = std::addr_t( );
+         return ptr< func_t* >( fn_addr )( );
+      }
+
+      std::addr_t ps_get_current_thread( ) {
+         static auto fn_addr{ find_export( "PsGetCurrentThread" ) };
+         if ( !fn_addr )
+            return {};
+
+         using func_t = std::addr_t( );
+         return ptr< func_t* >( fn_addr )( );
+      }
+
+      std::int32_t mm_copy_virtual_memory(
+         auto src_process,
+         auto src_address,
+         auto dst_process,
+         auto dst_address,
+         auto size,
+         auto bytes_copied
       ) {
-         static auto fn_addr{ find_export( "MmCopyMemory" ) };
+         static auto fn_addr{ find_export( "MmCopyVirtualMemory" ) };
          if ( !fn_addr )
             return 0;
 
          using func_t = std::int32_t(
-            decltype( dst_addr ),
-            decltype( src_addr ),
+            std::addr_t src_process,
+            decltype( src_address ),
+            std::addr_t dst_process,
+            decltype( dst_address ),
             std::size_t size,
-            std::int32_t flag,
-            std::size_t* bytes_read
+            std::int8_t mode,
+            std::size_t* bytes_copied
          );
 
-         std::size_t bytes_read{};
-         return ptr< func_t* >( fn_addr )( dst_addr, 
-            src_addr, size, flag, &bytes_read ) == nt_status_t::success;
-      }
-
-      template< std::int32_t flag >
-      [[ nodiscard ]]
-      std::addr_t mm_map_io_space_ex(
-         auto address,
-         auto size
-      ) {
-         static auto fn_addr{ find_export( "MmMapIoSpaceEx" ) };
-         if ( !fn_addr )
-            return {};
-
-         using func_t = std::addr_t(
-            decltype( address ),
-            std::size_t size,
-            std::int32_t flag
-         );
-
-         return ptr< func_t* >( fn_addr )( address, size, flag );
-      }
-
-      void mm_unmap_io_space(
-         auto address,
-         auto size
-      ) {
-         static auto fn_addr{ find_export( "MmUnmapIoSpace" ) };
-         if ( !fn_addr )
-            return {};
-
-         using func_t = void(
-            decltype( address ),
-            std::size_t size
-         );
-
-         ptr< func_t* >( fn_addr )( address, size );
+         return ptr< func_t* >( fn_addr )( src_process, 
+            src_address, dst_process, dst_address, size, 0, bytes_copied );
       }
 
       std::int8_t ps_create_system_thread(
@@ -129,46 +115,38 @@ namespace sdk {
          return ptr< func_t* >( fn_addr )( handle ) == nt_status_t::success;
       }
 
-      std::addr_t ps_query_process_directory_table_base(
+      [[ nodiscard ]]
+      std::addr_t ps_get_process_peb(
+         auto process
+      ) {
+         static auto fn_addr{ find_export( "PsQueryProcessCommandLine" ) };
+         if ( !fn_addr )
+            return {};
+
+         while ( fn_addr[0x0] != 0x49
+              || fn_addr[0x1] != 0x8b
+              || fn_addr[0x2] != 0x85 )
+            fn_addr++;
+
+         return *ptr< std::addr_t* >
+            ( process + *ptr< std::int32_t* >( &fn_addr[0x3] ) );
+      }
+
+      [[ nodiscard ]]
+      std::uintptr_t ps_get_process_cr3(
          auto process
       ) {
          static auto fn_addr{ find_export( "KeCapturePersistentThreadState" ) };
          if ( !fn_addr )
             return {};
-
-         while ( fn_addr[ 0x0 ] != 0x48
-              || fn_addr[ 0x1 ] != 0x8b 
-              || fn_addr[ 0x2 ] != 0x48 )
+         
+         while ( fn_addr[0x0] != 0x48
+              || fn_addr[0x1] != 0x8b 
+              || fn_addr[0x2] != 0x48 )
             fn_addr++;
 
-         return *ptr< std::addr_t* >( process + *ptr< std::int8_t* >( &fn_addr[ 0x3 ] ) );
-      }
-
-      void ke_stack_attach_process(
-         auto process,
-         auto apc_state
-      ) {
-         static auto fn_addr{ find_export( "KeStackAttachProcess" ) };
-         if ( !fn_addr )
-            return;
-
-         using func_t = void(
-            std::addr_t process,
-            kapc_state_t* apc_state
-         );
-
-         ptr< func_t* >( fn_addr )( process, apc_state );
-      }
-
-      void ke_unstack_detach_process(
-         auto apc_state
-      ) {
-         static auto fn_addr{ find_export( "KeUnstackDetachProcess" ) };
-         if ( !fn_addr )
-            return;
-
-         using func_t = void( kapc_state_t* apc_state );
-         ptr< func_t* >( fn_addr )( apc_state );
+         return *ptr< std::uintptr_t* >
+            ( process + *ptr< std::int8_t* >( &fn_addr[0x3] ) );
       }
 
       [[ nodiscard ]]
@@ -249,6 +227,32 @@ namespace sdk {
          return *ptr< unicode_string_t** >
             ( process + *ptr< std::int32_t* >( &ps_rva[0x9] ) );
       }
+
+      void ke_stack_attach_process(
+         auto process,
+         auto apc_state
+      ) {
+         static auto fn_addr{ find_export( "KeStackAttachProcess" ) };
+         if ( !fn_addr )
+            return;
+
+         using func_t = void(
+            std::addr_t process,
+            apc_state_t* apc_state
+         );
+
+         ptr< func_t* >( fn_addr )( process, apc_state );
+      }
+
+      //MmCopyVirtualMemory(
+      //   IN PEPROCESS FromProcess,
+      //   IN CONST VOID* FromAddress,
+      //   IN PEPROCESS ToProcess,
+      //   OUT PVOID ToAddress,
+      //   IN SIZE_T BufferSize,
+      //   IN KPROCESSOR_MODE PreviousMode,
+      //   OUT PSIZE_T NumberOfBytesCopied
+      //)
 
       //[[ nodiscard ]]
       //std::addr_t psp_cid_table( ) {

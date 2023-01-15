@@ -1,17 +1,6 @@
 #pragma once
 
 namespace sdk {
-   enum mm_copy_flag_t {
-      phys = 0x1,
-      virt = 0x2
-   };
-
-   enum mm_prot_flag_t {
-      page_r = 0x2,
-      page_rw = 0x4,
-      page_rwx = 0x10
-   };
-
    enum nt_status_t {
       success,
       alerted = 0x101,
@@ -35,7 +24,7 @@ namespace sdk {
       std::addr_t m_process;
       std::uint8_t m_in_progress_flags;
       std::uint8_t m_kernel_apc_pending;
-      std::uint8_t m_user_apc_pending;
+      std::uint8_t m_user_apc_pending_all;
    };
 
    struct unicode_string_t {

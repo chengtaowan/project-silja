@@ -1,49 +1,59 @@
 #pragma once
 
 namespace uti {
-   template< std::int32_t flag, class type_t >
-   [[ nodiscard ]]
+   template< class type_t >
    type_t read(
+      auto process,
       auto address
    ) {
-      type_t buffer{};
-      auto src_addr{ ptr< std::addr_t >( address ) };
-      auto dst_addr{ ptr< std::addr_t >( &buffer ) };
-      if ( !src_addr || !dst_addr )
+      auto current{ ntoskrnl->ps_get_current_process( ) };
+      if ( !current )
          return {};
 
-      for ( std::size_t i{}; i < sizeof( type_t ); i++ )
-         ntoskrnl->mm_copy_memory< flag >( dst_addr + i, src_addr + i, 1 );
+      type_t buffer{};
+      std::size_t bytes_read{};
+
+      ntoskrnl->mm_copy_virtual_memory( process, address, current, &buffer, sizeof( type_t ), &bytes_read );
       return buffer;
    }
 
-   template< std::int32_t flag, class type_t >
+   template< class type_t >
    void write(
+      auto process,
       auto address,
       auto buffer
    ) {
-      auto src_addr{ ptr< std::addr_t >( &buffer ) };
-      auto dst_addr{ ptr< std::addr_t >( address ) };
-      if ( !src_addr || !dst_addr )
+      auto current{ ntoskrnl->ps_get_current_process( ) };
+      if ( !current )
          return;
 
-      for ( std::size_t i{}; i < sizeof( type_t ); i++ ) {
-         if constexpr ( flag == sdk::mm_copy_flag_t::virt )
-            ntoskrnl->mm_copy_memory< flag >( dst_addr + i, src_addr + i, 1 );
-
-         if constexpr ( flag == sdk::mm_copy_flag_t::phys ) {
-            auto io_space{ ntoskrnl->mm_map_io_space_ex< sdk::mm_prot_flag_t::page_rw >( dst_addr + i, 1 ) };
-            if ( !io_space )
-               return;
-
-            ntoskrnl->mm_copy_memory< sdk::mm_copy_flag_t::virt >( io_space, src_addr + i, 1 );
-            ntoskrnl->mm_unmap_io_space( io_space, 1 );
-         }
-      }
+      std::size_t bytes_written{};
+      ntoskrnl->mm_copy_virtual_memory( current, &buffer, process, address, sizeof( type_t ), &bytes_written );
    }
 
    [[ nodiscard ]]
-   std::addr_t process_by_name(
+   std::addr_t get_process_ldr(
+      auto process
+   ) {
+      static auto fn_addr{ ntoskrnl->find_export( "PsQueryProcessCommandLine" ) };
+      if ( !fn_addr )
+         return {};
+
+      while ( fn_addr[0x0] != 0x48
+           || fn_addr[0x1] != 0x8b
+           || fn_addr[0x2] != 0x40 )
+         fn_addr++;
+
+      auto ldr_va{ *ptr< std::int8_t* >( &fn_addr[0x3] ) - sizeof( std::addr_t ) };
+      if ( !ldr_va )
+         return {};
+
+      return read< std::addr_t >
+         ( process, ntoskrnl->ps_get_process_peb( process ) + ldr_va );
+   }
+
+   [[ nodiscard ]]
+   std::addr_t get_process_by_name(
       auto process_name
    ) {
       auto init_pe{ ntoskrnl->ps_active_process_head( ) };
@@ -54,7 +64,7 @@ namespace uti {
       if ( !link_va )
          return {};
 
-      for ( auto it{ init_pe->m_flink }; it != init_pe; it = it->m_flink ) {
+      for ( auto it{ init_pe->m_flink }; it; it = it->m_flink ) {
 
          auto it_process{ ptr< std::addr_t >( it ) - link_va };
          if ( !it_process || !ntoskrnl->ps_is_process_status_pending( it_process ) )
